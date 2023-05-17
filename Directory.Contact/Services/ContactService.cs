@@ -19,23 +19,61 @@ namespace Directory.Contact.Services
         {
             try
             {
-                var vPersons = await _db.Contacts
-                    .Include(person => person.ContactInformations)
-                    .Select(person => new ContactSummary()
+                var vContacts = await _db.Contacts
+                    .Include(contact => contact.ContactInformations)
+                    .Select(contact => new ContactSummary()
                     {
-                        Id = person.Id,
-                        Name = person.Name,
-                        Surname = person.Surname,
-                        Company = person.Company,
+                        Id = contact.Id,
+                        Name = contact.Name,
+                        Surname = contact.Surname,
+                        Company = contact.Company,
                     })
                     .ToListAsync();
 
-                return Result<List<ContactSummary>>.PrepareSuccess(vPersons);
+                return Result<List<ContactSummary>>.PrepareSuccess(vContacts);
             }
             catch (Exception vEx)
             {
-                Log.Error(vEx, "PersonService GetPersonSummary error");
+                Log.Error(vEx, "COntactService GetContactSummary error");
                 return Result<List<ContactSummary>>.PrepareFailure("Kişiler verisi alınamadı");
+            }
+        }
+
+        public async Task<Result<ContactSummary>> GetContactSummaryById(int contactId)
+        {
+            try
+            {
+                var vContact = await _db.Contacts
+                    .Include(contact => contact.ContactInformations)
+                    .Where(contact => contact.Id == contactId)
+                    .Select(contact => new ContactSummary()
+                    {
+                        Id = contact.Id,
+                        Name = contact.Name,
+                        Surname = contact.Surname,
+                        Company = contact.Company,
+                        ContactInformationSummaries = contact.ContactInformations
+                            .Select(info => new ContactInformationSummary()
+                            {
+                                Id = info.Id,
+                                Telephone = info.Telephone,
+                                Mail = info.Mail,
+                                Location = info.Location
+                            })
+                            .ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (vContact == null)
+                    return Result<ContactSummary>.PrepareFailure("Kayıt bulunamadı");
+
+                return Result<ContactSummary>.PrepareSuccess(vContact);
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService GetContactSummaryById error");
+                return Result<ContactSummary>.PrepareFailure("Kişi verisi alınamadı");
             }
         }
     }

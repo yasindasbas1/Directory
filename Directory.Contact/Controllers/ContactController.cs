@@ -21,5 +21,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpGet("ContactSummaryById")]
+        public async Task<IActionResult> GetContactSummaryById([FromBody] int contactId)
+        {
+            var vResult = await _contactService.GetContactSummaryById(contactId);
+            return Ok(vResult);
+        }
+
     }
 }
