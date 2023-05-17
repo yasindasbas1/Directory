@@ -1,5 +1,4 @@
-﻿
-namespace TelephoneDirectory.Core
+﻿namespace Directory.Core
 {
     public enum ReportStatuses
     {
