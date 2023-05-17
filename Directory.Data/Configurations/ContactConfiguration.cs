@@ -17,7 +17,7 @@ namespace Directory.Data.Configurations
 
             entity.HasMany(p => p.ContactInformations)
                 .WithOne()
-                .HasForeignKey(p=> p.PersonId)
+                .HasForeignKey(p=> p.ContactId)
                 .IsRequired();
         }
     }

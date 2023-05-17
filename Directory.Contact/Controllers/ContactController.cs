@@ -36,5 +36,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpPut("DeleteContact")]
+        public async Task<IActionResult> DeleteContact([FromBody] int contactId)
+        {
+            var vResult = await _contactService.DeleteContact(contactId);
+            return Ok(vResult);
+        }
+
     }
 }

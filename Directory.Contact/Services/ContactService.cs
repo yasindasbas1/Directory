@@ -3,6 +3,7 @@ using Directory.Core;
 using Directory.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
 
 namespace Directory.Contact.Services
 {
@@ -77,15 +78,15 @@ namespace Directory.Contact.Services
             }
         }
 
-        public async Task<Result> AddContact(ContactInfo personInfo)
+        public async Task<Result> AddContact(ContactInfo contactInfo)
         {
             try
             {
                 _db.Contacts.Add(new Data.Entities.Contact()
                 {
-                    Name = personInfo.Name,
-                    Surname = personInfo.Surname,
-                    Company = personInfo.Company,
+                    Name = contactInfo.Name,
+                    Surname = contactInfo.Surname,
+                    Company = contactInfo.Company,
                 });
 
                 await _db.SaveChangesAsync();
@@ -97,6 +98,38 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "ContactService AddContact error");
                 return Result.PrepareFailure("Kişi verisi eklenemedi");
+            }
+        }
+
+        public async Task<Result> DeleteContact(int contactId)
+        {
+            try
+            {
+                var vContact = await _db.Contacts
+                    .Where(contact => contact.Id == contactId)
+                    .Select(contact => new Data.Entities.Contact()
+                    {
+                        Id = contact.Id,
+                        Deleted = contact.Deleted
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (vContact == null)
+                    return Result.PrepareFailure("Kayıt bulunamadı");
+
+                _db.Contacts.Attach(vContact);
+
+                vContact.Deleted = true;
+
+                await _db.SaveChangesAsync();
+
+                return Result.PrepareSuccess();
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService DeleteContact error");
+                return Result.PrepareFailure("Kişi verisi silinemedi");
             }
         }
     }
