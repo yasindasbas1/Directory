@@ -4,6 +4,7 @@ using Directory.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System;
+using Directory.Data.Entities;
 
 namespace Directory.Contact.Services
 {
@@ -130,6 +131,42 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "ContactService DeleteContact error");
                 return Result.PrepareFailure("Kişi verisi silinemedi");
+            }
+        }
+
+        public async Task<Result> AddContactInformation(ContactInfo contactInfo)
+        {
+            try
+            {
+                var vContact = await _db.Contacts
+                    .Where(contact => contact.Id == contactInfo.Id)
+                    .Select(contact => new Data.Entities.Contact()
+                    {
+                        Id = contact.Id,
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (vContact == null)
+                    Result.PrepareFailure("Kişi kaydı bulunamadı");
+
+
+                _db.ContactInformations.Add(new ContactInformation()
+                {
+                    ContactId = contactInfo.Id,
+                    Location = contactInfo.ContactInformationInfo.Location,
+                    Telephone = contactInfo.ContactInformationInfo.Telephone,
+                    Mail = contactInfo.ContactInformationInfo.Mail,
+                    Deleted = false
+                });
+
+                await _db.SaveChangesAsync();
+
+                return Result.PrepareSuccess();
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService AddContactInformation error");
+                return Result.PrepareFailure("Kişiye iletişim bilgisi eklenemedi");
             }
         }
     }

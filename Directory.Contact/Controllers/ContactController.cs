@@ -43,5 +43,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpPost("AddContactInformation")]
+        public async Task<IActionResult> AddContactInformation(ContactInfo contactInfo)
+        {
+            var vResult = await _contactService.AddContactInformation(contactInfo);
+            return Ok(vResult);
+        }
+
     }
 }
