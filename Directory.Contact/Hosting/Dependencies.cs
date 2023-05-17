@@ -2,7 +2,7 @@
 using Directory.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Contact.Hosting
+namespace Directory.Contact.Hosting
 {
     public static class Dependencies
     {

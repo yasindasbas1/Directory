@@ -1,4 +1,4 @@
-﻿namespace Directory.Directory.Models
+﻿namespace Directory.Contact.Models
 {
     public class ContactInformationSummary
     {

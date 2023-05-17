@@ -2,7 +2,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Debugging;
 
-namespace Contact.Hosting;
+namespace Directory.Contact.Hosting;
 
 public static class Program
 {

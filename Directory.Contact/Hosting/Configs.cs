@@ -1,6 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 
-namespace Contact.Hosting
+namespace Directory.Contact.Hosting
 {
     public static class Configs
     {

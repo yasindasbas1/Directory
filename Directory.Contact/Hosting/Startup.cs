@@ -1,4 +1,4 @@
-﻿namespace Contact.Hosting
+﻿namespace Directory.Contact.Hosting
 {
     public class Startup
     {

@@ -1,4 +1,5 @@
-﻿using Directory.Contact.Services;
+﻿using Directory.Contact.Models;
+using Directory.Contact.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Directory.Contact.Controllers
@@ -25,6 +26,13 @@ namespace Directory.Contact.Controllers
         public async Task<IActionResult> GetContactSummaryById([FromBody] int contactId)
         {
             var vResult = await _contactService.GetContactSummaryById(contactId);
+            return Ok(vResult);
+        }
+
+        [HttpPost("AddContact")]
+        public async Task<IActionResult> AddContact(ContactInfo contactInfo)
+        {
+            var vResult = await _contactService.AddContact(contactInfo);
             return Ok(vResult);
         }
 

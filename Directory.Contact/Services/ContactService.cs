@@ -1,6 +1,6 @@
-﻿using Directory.Core;
+﻿using Directory.Contact.Models;
+using Directory.Core;
 using Directory.Data;
-using Directory.Directory.Models;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -74,6 +74,29 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "ContactService GetContactSummaryById error");
                 return Result<ContactSummary>.PrepareFailure("Kişi verisi alınamadı");
+            }
+        }
+
+        public async Task<Result> AddContact(ContactInfo personInfo)
+        {
+            try
+            {
+                _db.Contacts.Add(new Data.Entities.Contact()
+                {
+                    Name = personInfo.Name,
+                    Surname = personInfo.Surname,
+                    Company = personInfo.Company,
+                });
+
+                await _db.SaveChangesAsync();
+
+                return Result.PrepareSuccess();
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService AddContact error");
+                return Result.PrepareFailure("Kişi verisi eklenemedi");
             }
         }
     }
