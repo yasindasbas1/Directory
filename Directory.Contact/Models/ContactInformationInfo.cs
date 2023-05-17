@@ -1,12 +1,10 @@
-﻿namespace Directory.Data.Entities
+﻿namespace Directory.Contact.Models
 {
-    public class ContactInformation
+    public class ContactInformationInfo
     {
         public int Id { get; set; }
-        public int ContactId { get; set; }
         public string Telephone { get; set; }
         public string Mail { get; set; }
         public string Location { get; set; }
-        public bool Deleted { get; set; }
     }
 }

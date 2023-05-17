@@ -1,6 +1,6 @@
-﻿namespace Directory.Data.Entities
+﻿namespace Directory.Contact.Models
 {
-    public class ContactInformation
+    public class ContactInformationSummary
     {
         public int Id { get; set; }
         public int ContactId { get; set; }
