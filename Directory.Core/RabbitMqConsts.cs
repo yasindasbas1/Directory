@@ -1,5 +1,5 @@
 ﻿
-namespace TelephoneDirectory.Core
+namespace Directory.Core
 {
     public class RabbitMqConsts
     {

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace TelephoneDirectory.Core
+namespace Directory.Core
 {
     public class Result : IDisposable
     {
