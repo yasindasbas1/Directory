@@ -14,5 +14,12 @@ namespace Directory.Contact.Controllers
             _contactService = contactService;
         }
 
+        [HttpGet("ContactSummary")]
+        public async Task<IActionResult> GetContactSummary()
+        {
+            var vResult = await _contactService.GetContactSummary();
+            return Ok(vResult);
+        }
+
     }
 }
