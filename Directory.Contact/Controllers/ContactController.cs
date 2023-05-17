@@ -50,5 +50,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpPost("RemoveContactInformation")]
+        public async Task<IActionResult> RemoveContactInformation([FromBody] int contactInformationId)
+        {
+            var vResult = await _contactService.RemoveContactInformation(contactInfo);
+            return Ok(vResult);
+        }
+
     }
 }

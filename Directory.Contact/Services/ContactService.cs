@@ -169,5 +169,36 @@ namespace Directory.Contact.Services
                 return Result.PrepareFailure("Kişiye iletişim bilgisi eklenemedi");
             }
         }
+
+        public async Task<Result> RemoveContactInformation(int contactInformationId)
+        {
+            try
+            {
+                var vContactInformation = await _db.ContactInformations
+                    .Where(info => info.Id == contactInformationId)
+                    .Select(info => new ContactInformation()
+                    {
+                        Id = info.Id,
+                        Deleted = info.Deleted
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (vContactInformation == null)
+                    return Result.PrepareFailure("Kayıt bulunamadı");
+
+                _db.ContactInformations.Attach(vContactInformation);
+
+                vContactInformation.Deleted = true;
+
+                await _db.SaveChangesAsync();
+
+                return Result.PrepareSuccess();
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService RemoveContactInformation error");
+                return Result.PrepareFailure("Kişiye ait iletişim bilgisi kaldırılamadı.");
+            }
+        }
     }
 }
