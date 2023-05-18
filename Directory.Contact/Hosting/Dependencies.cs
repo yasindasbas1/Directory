@@ -8,7 +8,7 @@ namespace Directory.Contact.Hosting
     {
         public static void ConfigureDependencies(this IServiceCollection services, IWebHostEnvironment env, IConfiguration configuration)
         {
-            services.AddDbContext<Context>(builder =>
+            services.AddDbContext<ContactContextDb>(builder =>
             {
                 builder.UseSqlServer(configuration.GetConnectionString("ConnectionString")!);
                 builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);

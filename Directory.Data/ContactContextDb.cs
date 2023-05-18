@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Directory.Data
 {
-    public class Context : DbContext
+    public class ContactContextDb : DbContext
     {
-        public Context(DbContextOptions<Context> options)
+        public ContactContextDb(DbContextOptions<ContactContextDb> options)
             : base(options)
         {
 
@@ -18,7 +18,7 @@ namespace Directory.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContactContextDb).Assembly);
         }
 
         public virtual DbSet<Contact> Contacts { get; set; } = null!;

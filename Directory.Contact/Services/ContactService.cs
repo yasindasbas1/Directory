@@ -10,10 +10,10 @@ namespace Directory.Contact.Services
 {
     public class ContactService
     {
-        private readonly Context _db;
+        private readonly ContactContextDb _db;
         private readonly HttpClient httpClient;
 
-        public ContactService(Context db)
+        public ContactService(ContactContextDb db)
         {
             _db = db;
 
@@ -223,6 +223,29 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "Contact RequestReport error");
                 return Result.PrepareFailure("Rapor talep edilemedi");
+            }
+        }
+
+        public async Task<Result<List<ReportSummary>>> ReportSummary()
+        {
+            try
+            {
+                var vReports = await _db.Reports
+                    .Select(report => new ReportSummary()
+                    {
+                        Id = report.Id,
+                        RequestTime = report.RequestTime,
+                        CompletedTime = report.CompletedTime,
+                        Url = report.Url,
+                        Status = report.Status
+                    })
+                    .ToListAsync();
+                return Result<List<ReportSummary>>.PrepareSuccess(vReports);
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService ReportSummary error");
+                return Result<List<ReportSummary>>.PrepareFailure("Rapor listesi alınamadı");
             }
         }
     }

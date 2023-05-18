@@ -64,5 +64,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpGet("ReportSummary")]
+        public async Task<IActionResult> ReportSummary()
+        {
+            var vResult = await _contactService.ReportSummary();
+            return Ok(vResult);
+        }
+
     }
 }
