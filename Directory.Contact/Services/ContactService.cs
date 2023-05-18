@@ -260,7 +260,7 @@ namespace Directory.Contact.Services
                         Id = detail.Id,
                         ReportId = detail.ReportId,
                         Location = detail.Location,
-                        PersonCount = detail.PersonCount,
+                        ContactCount = detail.ContactCount,
                         TelephoneCount = detail.TelephoneCount
                     })
                     .ToListAsync();
