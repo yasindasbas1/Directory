@@ -71,5 +71,12 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpPost("ReportDetailSummaryById")]
+        public async Task<IActionResult> ReportDetailSummaryById([FromBody] int reportId)
+        {
+            var vResult = await _contactService.ReportDetailSummaryById(reportId);
+            return Ok(vResult);
+        }
+
     }
 }

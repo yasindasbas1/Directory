@@ -248,5 +248,31 @@ namespace Directory.Contact.Services
                 return Result<List<ReportSummary>>.PrepareFailure("Rapor listesi alınamadı");
             }
         }
+
+        public async Task<Result<List<ReportDetailSummary>>> ReportDetailSummaryById(int reportId)
+        {
+            try
+            {
+                var vReportDetails = await _db.ReportDetails
+                    .Where(detail => detail.ReportId == reportId)
+                    .Select(detail => new ReportDetailSummary()
+                    {
+                        Id = detail.Id,
+                        ReportId = detail.ReportId,
+                        Location = detail.Location,
+                        PersonCount = detail.PersonCount,
+                        TelephoneCount = detail.TelephoneCount
+                    })
+                    .ToListAsync();
+
+                return Result<List<ReportDetailSummary>>.PrepareSuccess(vReportDetails);
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService ReportDetailSummaryById error");
+                return Result<List<ReportDetailSummary>>.PrepareFailure("Rapor detay verisi alınamadı");
+            }
+        }
     }
 }
