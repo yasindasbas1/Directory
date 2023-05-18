@@ -22,7 +22,7 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
-        [HttpGet("ContactSummaryById")]
+        [HttpPost("ContactSummaryById")]
         public async Task<IActionResult> GetContactSummaryById([FromBody] int contactId)
         {
             var vResult = await _contactService.GetContactSummaryById(contactId);
@@ -53,7 +53,28 @@ namespace Directory.Contact.Controllers
         [HttpPost("RemoveContactInformation")]
         public async Task<IActionResult> RemoveContactInformation([FromBody] int contactInformationId)
         {
-            var vResult = await _contactService.RemoveContactInformation(contactInfo);
+            var vResult = await _contactService.RemoveContactInformation(contactInformationId);
+            return Ok(vResult);
+        }
+
+        [HttpGet("RequestReport")]
+        public async Task<IActionResult> RequestReport()
+        {
+            var vResult = await _contactService.RequestReport();
+            return Ok(vResult);
+        }
+
+        [HttpGet("ReportSummary")]
+        public async Task<IActionResult> ReportSummary()
+        {
+            var vResult = await _contactService.ReportSummary();
+            return Ok(vResult);
+        }
+
+        [HttpPost("ReportDetailSummaryById")]
+        public async Task<IActionResult> ReportDetailSummaryById([FromBody] int reportId)
+        {
+            var vResult = await _contactService.ReportDetailSummaryById(reportId);
             return Ok(vResult);
         }
 

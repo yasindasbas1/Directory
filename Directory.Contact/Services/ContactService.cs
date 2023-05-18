@@ -3,18 +3,22 @@ using Directory.Core;
 using Directory.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System;
 using Directory.Data.Entities;
+using Newtonsoft.Json;
 
 namespace Directory.Contact.Services
 {
     public class ContactService
     {
-        private readonly Context _db;
+        private readonly ContactContextDb _db;
+        private readonly HttpClient httpClient;
 
-        public ContactService(Context db)
+        public ContactService(ContactContextDb db)
         {
             _db = db;
+
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:32002");
         }
 
         public async Task<Result<List<ContactSummary>>> GetContactSummary()
@@ -198,6 +202,76 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "ContactService RemoveContactInformation error");
                 return Result.PrepareFailure("Kişiye ait iletişim bilgisi kaldırılamadı.");
+            }
+        }
+
+        public async Task<Result> RequestReport()
+        {
+            try
+            {
+                var response = await httpClient.GetAsync("/api/Report/CreateReport");
+                response.EnsureSuccessStatusCode();
+
+                var vResult = JsonConvert.DeserializeObject<Result>(response.Content.ReadAsStringAsync().Result);
+                if (vResult.Failed)
+                    return Result.PrepareFailure(vResult.Message);
+
+                return Result.PrepareSuccess();
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "Contact RequestReport error");
+                return Result.PrepareFailure("Rapor talep edilemedi");
+            }
+        }
+
+        public async Task<Result<List<ReportSummary>>> ReportSummary()
+        {
+            try
+            {
+                var vReports = await _db.Reports
+                    .Select(report => new ReportSummary()
+                    {
+                        Id = report.Id,
+                        RequestTime = report.RequestTime,
+                        CompletedTime = report.CompletedTime,
+                        Url = report.Url,
+                        Status = report.Status
+                    })
+                    .ToListAsync();
+                return Result<List<ReportSummary>>.PrepareSuccess(vReports);
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService ReportSummary error");
+                return Result<List<ReportSummary>>.PrepareFailure("Rapor listesi alınamadı");
+            }
+        }
+
+        public async Task<Result<List<ReportDetailSummary>>> ReportDetailSummaryById(int reportId)
+        {
+            try
+            {
+                var vReportDetails = await _db.ReportDetails
+                    .Where(detail => detail.ReportId == reportId)
+                    .Select(detail => new ReportDetailSummary()
+                    {
+                        Id = detail.Id,
+                        ReportId = detail.ReportId,
+                        Location = detail.Location,
+                        PersonCount = detail.PersonCount,
+                        TelephoneCount = detail.TelephoneCount
+                    })
+                    .ToListAsync();
+
+                return Result<List<ReportDetailSummary>>.PrepareSuccess(vReportDetails);
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService ReportDetailSummaryById error");
+                return Result<List<ReportDetailSummary>>.PrepareFailure("Rapor detay verisi alınamadı");
             }
         }
     }
