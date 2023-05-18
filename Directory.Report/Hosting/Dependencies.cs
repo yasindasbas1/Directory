@@ -1,5 +1,7 @@
 ﻿using Directory.Data;
+using Directory.Report.Services;
 using Microsoft.EntityFrameworkCore;
+using TelephoneDirectory.Report.Services;
 
 namespace Directory.Report.Hosting
 {
@@ -19,6 +21,9 @@ namespace Directory.Report.Hosting
                 builder.EnableDetailedErrors();
 
             });
+
+            services.AddScoped<ReportPublisherService>();
+            services.AddHostedService<ReportConsumerService>();
         }
     }
     
