@@ -3,18 +3,22 @@ using Directory.Core;
 using Directory.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System;
 using Directory.Data.Entities;
+using Newtonsoft.Json;
 
 namespace Directory.Contact.Services
 {
     public class ContactService
     {
         private readonly Context _db;
+        private readonly HttpClient httpClient;
 
         public ContactService(Context db)
         {
             _db = db;
+
+            httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:32002");
         }
 
         public async Task<Result<List<ContactSummary>>> GetContactSummary()
@@ -198,6 +202,27 @@ namespace Directory.Contact.Services
             {
                 Log.Error(vEx, "ContactService RemoveContactInformation error");
                 return Result.PrepareFailure("Kişiye ait iletişim bilgisi kaldırılamadı.");
+            }
+        }
+
+        public async Task<Result> RequestReport()
+        {
+            try
+            {
+                var response = await httpClient.GetAsync("/api/Report/CreateReport");
+                response.EnsureSuccessStatusCode();
+
+                var vResult = JsonConvert.DeserializeObject<Result>(response.Content.ReadAsStringAsync().Result);
+                if (vResult.Failed)
+                    return Result.PrepareFailure(vResult.Message);
+
+                return Result.PrepareSuccess();
+
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "Contact RequestReport error");
+                return Result.PrepareFailure("Rapor talep edilemedi");
             }
         }
     }

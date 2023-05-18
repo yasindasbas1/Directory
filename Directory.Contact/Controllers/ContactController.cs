@@ -53,7 +53,14 @@ namespace Directory.Contact.Controllers
         [HttpPost("RemoveContactInformation")]
         public async Task<IActionResult> RemoveContactInformation([FromBody] int contactInformationId)
         {
-            var vResult = await _contactService.RemoveContactInformation(contactInfo);
+            var vResult = await _contactService.RemoveContactInformation(contactInformationId);
+            return Ok(vResult);
+        }
+
+        [HttpGet("RequestReport")]
+        public async Task<IActionResult> RequestReport()
+        {
+            var vResult = await _contactService.RequestReport();
             return Ok(vResult);
         }
 
