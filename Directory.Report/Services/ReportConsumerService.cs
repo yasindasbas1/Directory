@@ -1,12 +1,15 @@
 ﻿using System.Text;
 using Directory.Core;
+using Directory.Data;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog;
 
 namespace Directory.Report.Services
 {
     public class ReportConsumerService : BackgroundService
     {
+
         private readonly IServiceProvider _serviceProvider;
 
         public ReportConsumerService(IServiceProvider serviceProvider)
@@ -41,7 +44,15 @@ namespace Directory.Report.Services
                             var body = ea.Body.ToArray();
                             var message = Encoding.UTF8.GetString(body);
 
-                            //Kuyrukta bir istek varsa yapılacak işlem
+                            var scope = _serviceProvider.CreateScope();
+
+                            var _db = scope.ServiceProvider.GetRequiredService<ReportContextDb>();
+
+                            ReportService reportService = new ReportService(_db);
+                            var vResult = reportService.MakeReport(message);
+
+                            if (vResult.Failed)
+                                Log.Error("ReportService" + vResult.Message);
                         };
 
                         channel.BasicConsume(
