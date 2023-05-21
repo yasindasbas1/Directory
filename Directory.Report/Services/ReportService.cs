@@ -2,9 +2,12 @@
 using Directory.Data;
 using Directory.Data.Entities;
 using Directory.Report.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using Serilog;
 
 namespace Directory.Report.Services
@@ -36,7 +39,7 @@ namespace Directory.Report.Services
                 if (vUpdateResult.Failed)
                     return Result.PrepareFailure(vUpdateResult.Message);
 
-                var vReportResult = GetPersonReport().Result;
+                var vReportResult = GetContacInformationReport();
 
                 if (vReportResult.Failed)
                     return Result.PrepareFailure(vReportResult.Message);
@@ -95,19 +98,28 @@ namespace Directory.Report.Services
             }
         }
 
-        private async Task<Result> GetPersonReport()
+        private Result GetContacInformationReport()
         {
             try
             {
-                var response = await httpClient.GetAsync("/api/Contact/ContactInformationSummary");
-                response.EnsureSuccessStatusCode();
+                var response = httpClient.GetAsync("/api/Contact/ContactInformationSummary");
 
-                var vResult = JsonConvert.DeserializeObject<Result<List<ContactInformationSummary>>>(response.Content.ReadAsStringAsync().Result);
+                var vResponse = response.Result.Content.ReadAsStringAsync();
 
-                if (vResult.Failed)
-                    return Result.PrepareFailure(vResult.Message);
+                List<ContactInformationSummary> vResult = null;
 
-                _reportDetails = vResult.Payload
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    JObject jsonObject = JObject.Parse(vResponse.Result);
+                    JToken payloadToken = jsonObject["payload"];
+
+                    vResult = JsonConvert.DeserializeObject<List<ContactInformationSummary>>(payloadToken.ToString())!;
+                }
+
+                if (vResult.Count == 0)
+                    return Result.PrepareFailure("Kişilere ait iletişim kaydı bulunamadı");
+
+                _reportDetails = vResult
                     .GroupBy(info => info.Location)
                     .Select(info => new ReportDetail()
                     {
@@ -122,7 +134,7 @@ namespace Directory.Report.Services
             }
             catch (Exception vEx)
             {
-                Log.Error(vEx, "ReportService GetPerson Kişi bilgileri alınamadı");
+                Log.Error(vEx, "ReportService GetContacInformationReport error");
                 return Result.PrepareFailure("Contact servisinden veri alınamadı");
             }
         }
@@ -142,7 +154,7 @@ namespace Directory.Report.Services
 
                 worksheet.Cells[1, 1].Value = "Location";
                 worksheet.Cells[1, 2].Value = "TelephoneCount";
-                worksheet.Cells[1, 3].Value = "PersonCount";
+                worksheet.Cells[1, 3].Value = "ContactCount";
 
                 for (int i = 0; i < _reportDetails.Count; i++)
                 {
