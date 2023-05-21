@@ -22,6 +22,13 @@ namespace Directory.Contact.Controllers
             return Ok(vResult);
         }
 
+        [HttpGet("ContactInformationSummary")]
+        public async Task<IActionResult> GetContactInformationSummary()
+        {
+            var vResult = await _contactService.GetContactInformationSummary();
+            return Ok(vResult);
+        }
+
         [HttpPost("ContactSummaryById")]
         public async Task<IActionResult> GetContactSummaryById([FromBody] int contactId)
         {

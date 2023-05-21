@@ -40,8 +40,32 @@ namespace Directory.Contact.Services
             }
             catch (Exception vEx)
             {
-                Log.Error(vEx, "COntactService GetContactSummary error");
+                Log.Error(vEx, "ContactService GetContactSummary error");
                 return Result<List<ContactSummary>>.PrepareFailure("Kişiler verisi alınamadı");
+            }
+        }
+
+        public async Task<Result<List<ContactInformationSummary>>> GetContactInformationSummary()
+        {
+            try
+            {
+                var vContactInformation = await _db.ContactInformations
+                    .Where(info => !info.Deleted)
+                    .Select(info => new ContactInformationSummary()
+                    {
+                        Id = info.Id,
+                        ContactId = info.ContactId,
+                        Location = info.Location,
+                        Telephone = info.Telephone,
+                    })
+                    .ToListAsync();
+
+                return Result<List<ContactInformationSummary>>.PrepareSuccess(vContactInformation);
+            }
+            catch (Exception vEx)
+            {
+                Log.Error(vEx, "ContactService GetContactInformationSummary error");
+                return Result<List<ContactInformationSummary>>.PrepareFailure("Kişilerin iletişim bilgi verisi alınamadı");
             }
         }
 
@@ -260,7 +284,7 @@ namespace Directory.Contact.Services
                         Id = detail.Id,
                         ReportId = detail.ReportId,
                         Location = detail.Location,
-                        PersonCount = detail.PersonCount,
+                        ContactCount = detail.ContactCount,
                         TelephoneCount = detail.TelephoneCount
                     })
                     .ToListAsync();
