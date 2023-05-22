@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Xml;
 using Directory.Data;
+using Directory.XunitTest.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Formes.XunitTest.Data
 {
-    public class DbContactTestDataFixture : IDisposable
+    public class ContactTestDbFixture : IDisposable
     {
         public ContactContextDb Context { get; private set; }
 
-        public DbContactTestDataFixture()
+        public ContactTestDbFixture()
         {
             var options = new DbContextOptionsBuilder<ContactContextDb>()
                 .EnableSensitiveDataLogging()
@@ -16,6 +19,11 @@ namespace Formes.XunitTest.Data
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).Options;            
                       
             Context= new ContactContextDb(options);
+
+            Context.Contacts.AddRange(TestData.ContactData());
+            Context.ContactInformations.AddRange(TestData.ContactInformationData());
+            Context.Reports.AddRange(TestData.ReportData());
+            Context.ReportDetails.AddRange(TestData.ReportDetailData());
 
             Context.SaveChanges();
             Context.ChangeTracker.Clear();
