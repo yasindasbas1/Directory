@@ -7,6 +7,7 @@ using Xunit;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Directory.Data;
+using Directory.Data.Entities;
 
 namespace Directory.xUnitTest
 {
@@ -89,6 +90,66 @@ namespace Directory.xUnitTest
         {
             var vResult = await _contactService.ReportSummary();
             Assert.IsType<List<ReportSummary>>(vResult.Payload);
+        }
+
+        [Theory]
+        [InlineData(100, "Ýstanbul", "02554655", "mail@gmail.com")]
+        public async void AddContactInformation_InsertContact_True(int contactId, string location, string telephone, string mail)
+        {
+            var vContactInformation = new ContactInfo()
+            {
+                Id = contactId,
+                ContactInformationInfo = new ContactInformationInfo()
+                {
+                    Location = location,
+                    Telephone = telephone,
+                    Mail = mail
+                }
+ 
+            };
+
+            var vResult = await _contactService.AddContactInformation(vContactInformation);
+            Assert.True(vResult.Success);
+        }
+
+        [Theory]
+        [InlineData(30)]
+        public async void RemoveContactInformation_ReturnSuccess_True(int id)
+        {
+            var vResult = await _contactService.RemoveContactInformation(id);
+            Assert.True(vResult.Success);
+        }
+
+        [Theory]
+        [InlineData(9999)]
+        public async void RemoveContactInformation_ReturnSuccess_False(int id)
+        {
+            var vResult = await _contactService.RemoveContactInformation(id);
+            Assert.False(vResult.Success);
+        }
+
+        [Theory]
+        [InlineData(9999)]
+        public async void ReportDetailSummaryById_ReturnCount_False(int id)
+        {
+            var vResult = await _contactService.ReportDetailSummaryById(id);
+            Assert.False(vResult.Payload.Count > 0);
+        }
+
+        [Theory]
+        [InlineData(3000)]
+        public async void ReportDetailSummaryById_ReturnReportDetailSummary_NotNull(int id)
+        {
+            var vResult = await _contactService.ReportDetailSummaryById(id);
+            Assert.NotNull(vResult.Payload);
+        }
+
+        [Theory]
+        [InlineData(3000)]
+        public async void ReportDetailSummaryById_ReturnReportDetailSummary_IsType(int id)
+        {
+            var vResult = await _contactService.ReportDetailSummaryById(id);
+            Assert.IsType<List<ReportDetailSummary>>(vResult.Payload);
         }
 
     }
